@@ -1,0 +1,115 @@
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
+function Header() {
+  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    navigate('/');
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  return (
+    <header className="bg-gray-800 text-white p-4 shadow-md">
+      <div className="container mx-auto flex justify-between items-center">
+        <h1 className="text-xl font-bold">Admin Panel</h1>
+        <button
+          className="md:hidden px-3 py-2 border rounded-md border-white"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          &#9776;
+        </button>
+        <nav
+          className={`flex-col md:flex md:flex-row md:space-x-4 items-center ${
+            isMenuOpen ? 'flex' : 'hidden'
+          } md:flex`}
+        >
+          <NavLink
+            to="/admin/dashboard"
+            className={({ isActive }) =>
+              isActive
+                ? 'px-3 py-2 bg-blue-600 rounded-md block'
+                : 'px-3 py-2 hover:bg-gray-700 rounded-md block'
+            }
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Dashboard
+          </NavLink>
+          <NavLink
+            to="/admin/vehicles"
+            className={({ isActive }) =>
+              isActive
+                ? 'px-3 py-2 bg-blue-600 rounded-md block'
+                : 'px-3 py-2 hover:bg-gray-700 rounded-md block'
+            }
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Vehicles
+          </NavLink>
+          <NavLink
+            to="/admin/trips"
+            className={({ isActive }) =>
+              isActive
+                ? 'px-3 py-2 bg-blue-600 rounded-md block'
+                : 'px-3 py-2 hover:bg-gray-700 rounded-md block'
+            }
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Trips
+          </NavLink>
+          <NavLink
+            to="/admin/expenses"
+            className={({ isActive }) =>
+              isActive
+                ? 'px-3 py-2 bg-blue-600 rounded-md block'
+                : 'px-3 py-2 hover:bg-gray-700 rounded-md block'
+            }
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Expenses
+          </NavLink>
+          <NavLink
+            to="/admin/reports"
+            className={({ isActive }) =>
+              isActive
+                ? 'px-3 py-2 bg-blue-600 rounded-md block'
+                : 'px-3 py-2 hover:bg-gray-700 rounded-md block'
+            }
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Reports
+          </NavLink>
+          <NavLink
+            to="/register"
+            className={({ isActive }) =>
+              isActive
+                ? 'px-3 py-2 bg-blue-600 rounded-md block'
+                : 'px-3 py-2 hover:bg-gray-700 rounded-md block'
+            }
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Register User
+          </NavLink>
+          <button
+            onClick={() => {
+              handleLogout();
+              setIsMenuOpen(false);
+            }}
+            className="px-3 py-2 bg-red-500 hover:bg-red-600 rounded-md block"
+          >
+            Logout
+          </button>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+export default Header;

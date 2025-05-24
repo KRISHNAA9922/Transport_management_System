@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 function Expenses() {
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [formData, setFormData] = useState({
@@ -36,9 +38,9 @@ function Expenses() {
       setVehicles(vehiclesRes.data);
     } catch (err) {
       const status = err.response?.status;
-      if (status === 401) setError('Unauthorized: Please login again.');
-      else if (status === 403) setError('Access denied.');
-      else setError('Failed to fetch data');
+      if (status === 401) setError(t('unauthorized_login'));
+      else if (status === 403) setError(t('access_denied'));
+      else setError(t('failed_fetch_data'));
     } finally {
       setLoading(false);
     }
@@ -72,7 +74,7 @@ function Expenses() {
       setEditingId(null);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save expense');
+      setError(err.response?.data?.message || t('failed_save_expense'));
     } finally {
       setLoading(false);
     }
@@ -90,7 +92,7 @@ function Expenses() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this expense?')) return;
+    if (!window.confirm(t('delete_expense_confirm'))) return;
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -99,7 +101,7 @@ function Expenses() {
       });
       setExpenses(expenses.filter((ex) => ex._id !== id));
     } catch (err) {
-      setError(err.response?.data?.message || 'Delete failed');
+      setError(err.response?.data?.message || t('delete_failed'));
     } finally {
       setLoading(false);
     }
@@ -112,19 +114,19 @@ function Expenses() {
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">Expenses</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">{t('expenses')}</h1>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {loading && <p className="text-blue-500 text-center mb-4">Loading...</p>}
+        {loading && <p className="text-blue-500 text-center mb-4">{t('loading')}</p>}
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Form on the Left */}
           <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow">
-            <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit Expense' : 'Add Expense'}</h2>
+            <h2 className="text-xl font-semibold mb-4">{editingId ? t('edit_expense') : t('add_expense')}</h2>
             <form onSubmit={handleSubmit} className="grid gap-4">
               {/* Type */}
               <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
+                <label className="block text-sm font-medium mb-1">{t('type')}</label>
                 <select
                   name="type"
                   value={formData.type}
@@ -132,17 +134,17 @@ function Expenses() {
                   className="w-full border px-3 py-2 rounded-xl"
                   required
                 >
-                  <option>Fuel</option>
-                  <option>Toll</option>
-                  <option>Repairs</option>
-                  <option>Driver Salary</option>
-                  <option>Miscellaneous</option>
+                  <option>{t('fuel')}</option>
+                  <option>{t('toll')}</option>
+                  <option>{t('repairs')}</option>
+                  <option>{t('driver_salary')}</option>
+                  <option>{t('miscellaneous')}</option>
                 </select>
               </div>
 
               {/* Amount */}
               <div>
-                <label className="block text-sm font-medium mb-1">Amount</label>
+                <label className="block text-sm font-medium mb-1">{t('amount')}</label>
                 <input
                   type="number"
                   name="amount"
@@ -155,7 +157,7 @@ function Expenses() {
 
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium mb-1">Date</label>
+                <label className="block text-sm font-medium mb-1">{t('date')}</label>
                 <input
                   type="date"
                   name="date"
@@ -168,14 +170,14 @@ function Expenses() {
 
               {/* Vehicle */}
               <div>
-                <label className="block text-sm font-medium mb-1">Vehicle (Optional)</label>
+                <label className="block text-sm font-medium mb-1">{t('vehicle_optional')}</label>
                 <select
                   name="vehicle"
                   value={formData.vehicle}
                   onChange={handleChange}
                   className="w-full border px-3 py-2 rounded-xl"
                 >
-                  <option value="">None</option>
+                  <option value="">{t('none')}</option>
                   {vehicles.map((v) => (
                     <option key={v._id} value={v._id}>
                       {v.name} ({v.numberPlate})
@@ -186,7 +188,7 @@ function Expenses() {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium mb-1">Notes</label>
+                <label className="block text-sm font-medium mb-1">{t('notes')}</label>
                 <textarea
                   name="notes"
                   value={formData.notes}
@@ -201,57 +203,57 @@ function Expenses() {
                 className="bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
                 disabled={loading}
               >
-                {editingId ? 'Update Expense' : 'Add Expense'}
+                {editingId ? t('update_expense') : t('add_expense')}
               </button>
             </form>
           </div>
 
           {/* Cards on the Right */}
           <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow">
-            <h2 className="text-xl font-semibold mb-4">Expense List</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('expense_list')}</h2>
 
             {/* Filter */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Filter by Type</label>
+              <label className="block text-sm font-medium mb-1">{t('filter_by_type')}</label>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
                 className="w-full border px-3 py-2 rounded-xl"
               >
-                <option value="">All</option>
-                <option>Fuel</option>
-                <option>Toll</option>
-                <option>Repairs</option>
-                <option>Driver Salary</option>
-                <option>Miscellaneous</option>
+                <option value="">{t('all')}</option>
+                <option>{t('fuel')}</option>
+                <option>{t('toll')}</option>
+                <option>{t('repairs')}</option>
+                <option>{t('driver_salary')}</option>
+                <option>{t('miscellaneous')}</option>
               </select>
             </div>
 
             {filteredExpenses.length === 0 ? (
-              <p className="text-gray-500">No expenses found.</p>
+              <p className="text-gray-500">{t('no_expenses_found')}</p>
             ) : (
               <div className="grid gap-4">
                 {filteredExpenses.map((ex) => (
                   <div key={ex._id} className="p-4 bg-gray-50 border rounded-xl shadow-sm">
                     <h3 className="font-semibold text-lg">{ex.type}</h3>
-                    <p>Amount: ₹{ex.amount}</p>
-                    <p>Date: {new Date(ex.date).toLocaleDateString()}</p>
-                    <p>Vehicle: {ex.vehicle ? `${ex.vehicle.name} (${ex.vehicle.numberPlate})` : 'None'}</p>
-                    <p>Notes: {ex.notes || 'None'}</p>
+                    <p>{t('amount')}: ₹{ex.amount}</p>
+                    <p>{t('date')}: {new Date(ex.date).toLocaleDateString()}</p>
+                    <p>{t('vehicle')}: {ex.vehicle ? `${ex.vehicle.name} (${ex.vehicle.numberPlate})` : t('none')}</p>
+                    <p>{t('notes')}: {ex.notes || t('none')}</p>
                     <div className="flex gap-2 mt-4">
                       <button
                         onClick={() => handleEdit(ex)}
                         className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                         disabled={loading}
                       >
-                        Edit
+                        {t('edit')}
                       </button>
                       <button
                         onClick={() => handleDelete(ex._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                         disabled={loading}
                       >
-                        Delete
+                        {t('delete')}
                       </button>
                     </div>
                   </div>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 function Trips() {
+  const { t } = useTranslation();
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -35,14 +37,14 @@ function Trips() {
     } catch (err) {
       if (err.response) {
         if (err.response.status === 401) {
-          setError('Unauthorized: Please login again.');
+          setError(t('unauthorized_login_again'));
         } else if (err.response.status === 403) {
-          setError('Access denied: You do not have permission to view drivers.');
+          setError(t('access_denied_permission'));
         } else {
-          setError('Failed to fetch data');
+          setError(t('failed_fetch_data'));
         }
       } else {
-        setError('Failed to fetch data');
+        setError(t('failed_fetch_data'));
       }
       console.error('Fetch error:', err);
     }
@@ -66,17 +68,17 @@ function Trips() {
         );
         setTrips(trips.map((trip) => (trip._id === editingId ? response.data : trip)));
         setEditingId(null);
-        setSuccessMessage('Trip updated successfully.');
+        setSuccessMessage(t('trip_updated_successfully'));
       } else {
         const response = await axios.post('http://localhost:5000/api/trips', formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTrips([...trips, response.data]);
-        setSuccessMessage('Trip added successfully.');
+        setSuccessMessage(t('trip_added_successfully'));
       }
       setFormData({ source: '', destination: '', vehicle: '', driver: '', date: '', incomeExpected: '' });
     } catch (err) {
-      setError(err.response?.data?.message || 'Server error');
+      setError(err.response?.data?.message || t('server_error'));
       console.error('Submit error:', err);
     }
   };
@@ -98,16 +100,16 @@ function Trips() {
   const handleDelete = async (id) => {
     setError('');
     setSuccessMessage('');
-    if (window.confirm('Are you sure you want to delete this trip?')) {
+    if (window.confirm(t('confirm_delete_trip'))) {
       try {
         const token = localStorage.getItem('token');
         await axios.delete(`http://localhost:5000/api/trips/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTrips(trips.filter((trip) => trip._id !== id));
-        setSuccessMessage('Trip deleted successfully.');
+        setSuccessMessage(t('trip_deleted_successfully'));
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete trip');
+        setError(err.response?.data?.message || t('failed_delete_trip'));
         console.error('Delete error:', err);
       }
     }
@@ -115,17 +117,17 @@ function Trips() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
-      <h1 className="text-3xl font-bold mb-6">Trips</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('trips')}</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left: Form */}
         <div className="md:w-1/3 bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit Trip' : 'Add Trip'}</h2>
+          <h2 className="text-xl font-semibold mb-4">{editingId ? t('edit_trip') : t('add_trip')}</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="source">Source</label>
+              <label className="block text-gray-700 mb-2" htmlFor="source">{t('source')}</label>
               <input
                 type="text"
                 id="source"
@@ -138,7 +140,7 @@ function Trips() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="destination">Destination</label>
+              <label className="block text-gray-700 mb-2" htmlFor="destination">{t('destination')}</label>
               <input
                 type="text"
                 id="destination"
@@ -151,7 +153,7 @@ function Trips() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="vehicle">Vehicle</label>
+              <label className="block text-gray-700 mb-2" htmlFor="vehicle">{t('vehicle')}</label>
               <select
                 id="vehicle"
                 name="vehicle"
@@ -160,7 +162,7 @@ function Trips() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select Vehicle</option>
+                <option value="">{t('select_vehicle')}</option>
                 {vehicles.map((vehicle) => (
                   <option key={vehicle._id} value={vehicle._id}>
                     {vehicle.name} ({vehicle.numberPlate})
@@ -170,7 +172,7 @@ function Trips() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="driver">Driver</label>
+              <label className="block text-gray-700 mb-2" htmlFor="driver">{t('driver')}</label>
               <select
                 id="driver"
                 name="driver"
@@ -179,7 +181,7 @@ function Trips() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select Driver</option>
+                <option value="">{t('select_driver')}</option>
                 {drivers.map((driver) => (
                   <option key={driver._id} value={driver._id}>
                     {driver.name} ({driver.email})
@@ -189,7 +191,7 @@ function Trips() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="date">Date</label>
+              <label className="block text-gray-700 mb-2" htmlFor="date">{t('date')}</label>
               <input
                 type="date"
                 id="date"
@@ -202,7 +204,7 @@ function Trips() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="incomeExpected">Expected Income</label>
+              <label className="block text-gray-700 mb-2" htmlFor="incomeExpected">{t('expected_income')}</label>
               <input
                 type="number"
                 id="incomeExpected"
@@ -218,16 +220,16 @@ function Trips() {
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
             >
-              {editingId ? 'Update Trip' : 'Add Trip'}
+              {editingId ? t('update_trip') : t('add_trip')}
             </button>
           </form>
         </div>
 
         {/* Right: Trip Cards */}
         <div className="md:w-2/3">
-          <h2 className="text-xl font-semibold mb-4">Trip List</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('trip_list')}</h2>
           {trips.length === 0 ? (
-            <p className="text-gray-600">No trips found.</p>
+            <p className="text-gray-600">{t('no_trips_found')}</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {trips.map((trip) => (
@@ -235,23 +237,23 @@ function Trips() {
                   <h3 className="text-lg font-semibold">
                     {trip.source} → {trip.destination}
                   </h3>
-                  <p>Vehicle: {trip.vehicle.name} ({trip.vehicle.numberPlate})</p>
-                  <p>Driver: {trip.driver.name}</p>
-                  <p>Date: {new Date(trip.date).toLocaleDateString()}</p>
-                  <p>Expected Income: ₹{trip.incomeExpected}</p>
-                  <p>Status: {trip.status}</p>
+                  <p>{t('vehicle')}: {trip.vehicle.name} ({trip.vehicle.numberPlate})</p>
+                  <p>{t('driver')}: {trip.driver.name}</p>
+                  <p>{t('date')}: {new Date(trip.date).toLocaleDateString()}</p>
+                  <p>{t('expected_income')}: ₹{trip.incomeExpected}</p>
+                  <p>{t('status')}: {trip.status}</p>
                   <div className="mt-4 space-x-2">
                     <button
                       onClick={() => handleEdit(trip)}
                       className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
                     >
-                      Edit
+                      {t('edit')}
                     </button>
                     <button
                       onClick={() => handleDelete(trip._id)}
                       className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                     >
-                      Delete
+                      {t('delete')}
                     </button>
                   </div>
                 </div>

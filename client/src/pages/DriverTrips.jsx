@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 function DriverTrips() {
+  const { t } = useTranslation();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,7 +23,7 @@ function DriverTrips() {
       setTrips(response.data.filter((trip) => trip.status !== 'Completed'));
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch trips');
+      setError(err.response?.data?.message || t('fetch_trips_error'));
       console.error('Fetch error:', err);
     } finally {
       setLoading(false);
@@ -40,7 +42,7 @@ function DriverTrips() {
       setTrips(trips.map((trip) => (trip._id === id ? response.data : trip)));
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to accept trip');
+      setError(err.response?.data?.message || t('accept_trip_error'));
       console.error('Accept error:', err);
     } finally {
       setLoading(false);
@@ -50,7 +52,7 @@ function DriverTrips() {
   const handleComplete = async (id) => {
     const income = incomeReceived[id];
     if (!income || isNaN(income) || income <= 0) {
-      setError('Please enter a valid income amount');
+      setError(t('valid_income_error'));
       return;
     }
 
@@ -66,7 +68,7 @@ function DriverTrips() {
       setIncomeReceived((prev) => ({ ...prev, [id]: '' }));
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to complete trip');
+      setError(err.response?.data?.message || t('complete_trip_error'));
       console.error('Complete error:', err);
     } finally {
       setLoading(false);
@@ -75,23 +77,23 @@ function DriverTrips() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Active Trips</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('active_trips')}</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      {loading && <p className="text-blue-500 mb-4">Loading...</p>}
+      {loading && <p className="text-blue-500 mb-4">{t('loading')}</p>}
       {trips.length === 0 ? (
-        <p className="text-gray-600">No active trips found.</p>
+        <p className="text-gray-600">{t('no_active_trips')}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full bg-white rounded-lg shadow">
             <thead>
               <tr className="bg-gray-200 text-gray-700">
-                <th className="py-3 px-4 text-left">Source</th>
-                <th className="py-3 px-4 text-left">Destination</th>
-                <th className="py-3 px-4 text-left">Vehicle</th>
-                <th className="py-3 px-4 text-left">Date</th>
-                <th className="py-3 px-4 text-left">Status</th>
-                <th className="py-3 px-4 text-left">Expected Income</th>
-                <th className="py-3 px-4 text-left">Actions</th>
+                <th className="py-3 px-4 text-left">{t('source')}</th>
+                <th className="py-3 px-4 text-left">{t('destination')}</th>
+                <th className="py-3 px-4 text-left">{t('vehicle')}</th>
+                <th className="py-3 px-4 text-left">{t('date')}</th>
+                <th className="py-3 px-4 text-left">{t('status')}</th>
+                <th className="py-3 px-4 text-left">{t('expected_income')}</th>
+                <th className="py-3 px-4 text-left">{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -100,7 +102,7 @@ function DriverTrips() {
                   <td className="py-3 px-4">{trip.source}</td>
                   <td className="py-3 px-4">{trip.destination}</td>
                   <td className="py-3 px-4">
-                    {trip.vehicle ? `${trip.vehicle.name} (${trip.vehicle.numberPlate})` : 'None'}
+                    {trip.vehicle ? `${trip.vehicle.name} (${trip.vehicle.numberPlate})` : t('none')}
                   </td>
                   <td className="py-3 px-4">{new Date(trip.date).toLocaleDateString()}</td>
                   <td className="py-3 px-4">{trip.status}</td>
@@ -112,7 +114,7 @@ function DriverTrips() {
                         className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
                         disabled={loading}
                       >
-                        Accept
+                        {t('accept')}
                       </button>
                     )}
                     {trip.status === 'Accepted' && (
@@ -123,7 +125,7 @@ function DriverTrips() {
                           onChange={(e) =>
                             setIncomeReceived({ ...incomeReceived, [trip._id]: e.target.value })
                           }
-                          placeholder="Income Received"
+                          placeholder={t('income_received')}
                           className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <button
@@ -131,7 +133,7 @@ function DriverTrips() {
                           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 disabled:opacity-50"
                           disabled={loading}
                         >
-                          Complete
+                          {t('complete')}
                         </button>
                       </div>
                     )}

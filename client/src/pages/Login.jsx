@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 
 function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -28,19 +31,20 @@ function Login() {
         setError(data.message);
       }
     } catch (err) {
-      setError('Server error');
+      setError(t('server_error'));
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <LanguageToggle />
+        <h2 className="text-2xl font-bold mb-6 text-center">{t('login')}</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="email">
-              Email
+              {t('email')}
             </label>
             <input
               type="email"
@@ -53,7 +57,7 @@ function Login() {
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 mb-2" htmlFor="password">
-              Password
+              {t('password')}
             </label>
             <input
               type="password"
@@ -68,14 +72,14 @@ function Login() {
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
           >
-            Login
+            {t('login')}
           </button>
           <button
             type="button"
             onClick={() => navigate('/register')}
             className="w-full mt-4 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
           >
-            Register
+            {t('register')}
           </button>
         </form>
       </div>

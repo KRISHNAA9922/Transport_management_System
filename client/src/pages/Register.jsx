@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
 
 function Register() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,38 +23,37 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Client-side validation for mobile if role is driver
     if (formData.role === 'driver' && (!formData.mobile || formData.mobile.trim().length !== 10)) {
-      setError('Mobile number is required and must be 10 digits for drivers');
+      setError(t('mobile_required'));
       return;
     }
 
-    // Client-side validation for password length
     if (!formData.password || formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('password_length_error'));
       return;
     }
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/register', formData);
       if (response.status === 201) {
-        alert('User registered successfully!');
+        alert(t('user_registered_success'));
         navigate('/');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Server error');
+      setError(err.response?.data?.message || t('server_error'));
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        <LanguageToggle />
+        <h2 className="text-2xl font-bold mb-6 text-center">{t('register')}</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="name">
-              Name
+              {t('name')}
             </label>
             <input
               type="text"
@@ -65,7 +67,7 @@ function Register() {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="email">
-              Email
+              {t('email')}
             </label>
             <input
               type="email"
@@ -79,7 +81,7 @@ function Register() {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="password">
-              Password
+              {t('password')}
             </label>
             <input
               type="password"
@@ -93,7 +95,7 @@ function Register() {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="role">
-              Role
+              {t('role')}
             </label>
             <select
               id="role"
@@ -102,13 +104,12 @@ function Register() {
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="admin">Admin</option>
-              <option value="driver">Driver</option>
+              <option value="driver">{t('driver')}</option>
             </select>
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 mb-2" htmlFor="mobile">
-              Mobile (required for drivers)
+              {t('mobile')} ({t('required_for_drivers')})
             </label>
             <input
               type="text"
@@ -117,20 +118,20 @@ function Register() {
               value={formData.mobile}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="10-digit mobile number"
+              placeholder={t('mobile_placeholder')}
             />
           </div>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
           >
-            Register
+            {t('register')}
           </button>
         </form>
         <p className="mt-4 text-center">
-          Already have an account?{' '}
+          {t('already_have_account')}{' '}
           <a href="/" className="text-blue-500 hover:underline">
-            Login
+            {t('login_here')}
           </a>
         </p>
       </div>

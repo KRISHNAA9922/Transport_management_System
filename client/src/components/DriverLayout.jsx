@@ -1,7 +1,9 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function DriverLayout() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -13,6 +15,10 @@ function DriverLayout() {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
   };
 
   return (
@@ -63,6 +69,33 @@ function DriverLayout() {
             >
               Logout
             </button>
+
+            {/* Language Toggle Button */}
+            <div className="ml-4 flex items-center space-x-2 mt-2 md:mt-0">
+              <span className="text-sm">{t('language')}:</span>
+              <div className="flex rounded-full bg-gray-700 p-1">
+                <button
+                  onClick={() => changeLanguage('en')}
+                  className={`px-3 py-1 rounded-full text-sm transition ${
+                    i18n.language === 'en'
+                      ? 'bg-white text-gray-800 font-semibold'
+                      : 'text-white hover:bg-gray-600'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => changeLanguage('mr')}
+                  className={`px-3 py-1 rounded-full text-sm transition ${
+                    i18n.language === 'mr'
+                      ? 'bg-white text-gray-800 font-semibold'
+                      : 'text-white hover:bg-gray-600'
+                  }`}
+                >
+                  मराठी
+                </button>
+              </div>
+            </div>
           </nav>
         </div>
       </header>

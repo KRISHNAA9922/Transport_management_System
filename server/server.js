@@ -12,23 +12,7 @@ dotenv.config();
 const app = express();
 
 // Middleware
-const allowedOrigins = ['https://shivshktii.onrender.com'];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  optionsSuccessStatus: 200, // For legacy browser support
-};
-
-app.use(cors(corsOptions));
-
-// Enable preflight for all routes
-app.options('*', cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection

@@ -3,15 +3,17 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import { combineReducers } from 'redux';
 
+import authReducer from './reducers/authReducer';
+
 // Example reducer placeholder, replace with actual reducers
 const rootReducer = combineReducers({
-  // Add your reducers her
+  auth: authReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [], // Add reducers you want to persist here
+  whitelist: ['auth'], // Add reducers you want to persist here
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

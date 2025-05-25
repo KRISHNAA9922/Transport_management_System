@@ -9,7 +9,6 @@ const expenseRoutes = require('./routes/expenseRoutes');
 
 dotenv.config();
 
-const path = require('path');
 const app = express();
 
 // Middleware
@@ -30,13 +29,8 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/expenses', expenseRoutes);
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../client/dist')));
-
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+app.get('/', (req, res) => {
+  res.send('Transport Management System API');
 });
 
 const PORT = process.env.PORT || 5000;

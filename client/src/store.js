@@ -5,7 +5,7 @@ import { combineReducers } from 'redux';
 
 // Example reducer placeholder, replace with actual reducers
 const rootReducer = combineReducers({
-  // Add your reducers here
+  // Add your reducers her
 });
 
 const persistConfig = {

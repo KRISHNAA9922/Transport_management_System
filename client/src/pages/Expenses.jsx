@@ -17,6 +17,7 @@ function Expenses() {
   const [filterType, setFilterType] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -48,6 +49,7 @@ function Expenses() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setSuccessMessage('');
   };
 
   const handleSubmit = async (e) => {
@@ -73,8 +75,10 @@ function Expenses() {
       setFormData({ type: 'Fuel', amount: '', date: '', vehicle: '', notes: '' });
       setEditingId(null);
       setError('');
+      setSuccessMessage(editingId ? t('expense_updated_success') : t('expense_added_success'));
     } catch (err) {
       setError(err.response?.data?.message || t('failed_save_expense'));
+      setSuccessMessage('');
     } finally {
       setLoading(false);
     }
@@ -117,10 +121,11 @@ function Expenses() {
         <h1 className="text-3xl font-bold mb-6 text-center">{t('expenses')}</h1>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {successMessage && <p className="text-green-600 text-center mb-4">{successMessage}</p>}
         {loading && <p className="text-blue-500 text-center mb-4">{t('loading')}</p>}
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Form on the Left */}
+          {/* Form on the Left */} 
           <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow">
             <h2 className="text-xl font-semibold mb-4">{editingId ? t('edit_expense') : t('add_expense')}</h2>
             <form onSubmit={handleSubmit} className="grid gap-4">

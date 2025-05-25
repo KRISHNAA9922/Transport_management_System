@@ -53,9 +53,13 @@ router.get('/reports/trips', authMiddleware(['admin']), async (req, res) => {
 
 // Add trip (Admin only)
 router.post('/', authMiddleware(['admin']), async (req, res) => {
-  const { source, destination, vehicle, driver, date, incomeExpected } = req.body;
+  let { source, destination, vehicle, driver, date, incomeExpected } = req.body;
 
   try {
+    if (driver === 'self') {
+      driver = req.user.id;
+    }
+
     const trip = new Trip({
       source,
       destination,
@@ -64,6 +68,7 @@ router.post('/', authMiddleware(['admin']), async (req, res) => {
       date,
       incomeExpected,
       status: 'Pending',
+      createdBy: req.user.id,
     });
     await trip.save();
     const populatedTrip = await Trip.findById(trip._id)
@@ -79,12 +84,16 @@ router.post('/', authMiddleware(['admin']), async (req, res) => {
 
 // Update trip (Admin only)
 router.put('/:id', authMiddleware(['admin']), async (req, res) => {
-  const { source, destination, vehicle, driver, date, incomeExpected } = req.body;
+  let { source, destination, vehicle, driver, date, incomeExpected } = req.body;
 
   try {
     const trip = await Trip.findById(req.params.id);
     if (!trip) {
       return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    if (driver === 'self') {
+      driver = req.user.id;
     }
 
     trip.source = source;
@@ -93,6 +102,7 @@ router.put('/:id', authMiddleware(['admin']), async (req, res) => {
     trip.driver = driver;
     trip.date = date;
     trip.incomeExpected = incomeExpected;
+    trip.createdBy = req.user.id;
 
     await trip.save();
     const populatedTrip = await Trip.findById(trip._id)

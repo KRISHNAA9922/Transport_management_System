@@ -8,6 +8,7 @@ function Reports() {
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
@@ -25,16 +26,20 @@ function Reports() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const [vehiclesRes, driversRes] = await Promise.all([
+      const [vehiclesRes, driversRes, expensesRes] = await Promise.all([
         axios.get('http://localhost:5000/api/vehicles', {
           headers: { Authorization: `Bearer ${token}` },
         }),
         axios.get('http://localhost:5000/api/auth/drivers', {
           headers: { Authorization: `Bearer ${token}` },
         }),
+        axios.get('http://localhost:5000/api/expenses', {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
       setVehicles(vehiclesRes.data);
       setDrivers(driversRes.data);
+      setExpenses(expensesRes.data);
     } catch (err) {
       setError(err.response?.data?.message || t('failed_fetch_data'));
       console.error('Fetch error:', err);
@@ -59,10 +64,16 @@ function Reports() {
       if (filters.vehicle) params.append('vehicle', filters.vehicle);
       if (filters.driver) params.append('driver', filters.driver);
 
-      const response = await axios.get(`http://localhost:5000/api/trips/reports/trips?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTrips(response.data);
+      const [tripsRes, expensesRes] = await Promise.all([
+        axios.get(`http://localhost:5000/api/trips/reports/trips?${params}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get('http://localhost:5000/api/expenses', {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      setTrips(tripsRes.data);
+      setExpenses(expensesRes.data);
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || t('failed_fetch_trips'));
@@ -95,6 +106,7 @@ function Reports() {
   };
 
   const totalIncome = trips.reduce((sum, trip) => sum + (trip.incomeReceived || 0), 0);
+  const totalExpenses = expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -196,7 +208,7 @@ function Reports() {
         ) : (
           <div>
             <p className="mb-2">
-              {t('total_trips')}: {trips.length} | {t('total_income')}: ₹{totalIncome.toFixed(2)}
+              {t('total_trips')}: {trips.length} | {t('total_income')}: ₹{totalIncome.toFixed(2)} | {t('total_expenses')}: ₹{totalExpenses.toFixed(2)}
             </p>
             <div className="overflow-x-auto">
               <table className="w-full bg-white rounded-lg shadow">

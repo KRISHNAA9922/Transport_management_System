@@ -69,7 +69,7 @@ router.delete('/:id', authMiddleware(), async (req, res) => {
       return res.status(404).json({ message: 'Expense not found' });
     }
 
-    await expense.remove();
+    await expense.deleteOne();
     res.json({ message: 'Expense deleted' });
   } catch (error) {
     console.error('Error deleting expense:', error);

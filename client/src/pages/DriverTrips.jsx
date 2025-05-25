@@ -2,14 +2,42 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
+function decodeJWT(token) {
+  if (!token) return null;
+  const payload = token.split('.')[1];
+  if (!payload) return null;
+  try {
+    return JSON.parse(atob(payload));
+  } catch (e) {
+    console.error('Failed to decode token', e);
+    return null;
+  }
+}
+
 function DriverTrips() {
   const { t } = useTranslation();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [incomeReceived, setIncomeReceived] = useState({});
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        const response = await axios.get('http://localhost:5000/api/auth/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserName(response.data.name || '');
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
     fetchTrips();
   }, []);
 
@@ -39,7 +67,11 @@ function DriverTrips() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setTrips(trips.map((trip) => (trip._id === id ? response.data : trip)));
+      setTrips(
+        trips.map((trip) =>
+          trip._id === id ? { ...response.data, driver: trip.driver } : trip
+        )
+      );
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || t('accept_trip_error'));
@@ -67,6 +99,7 @@ function DriverTrips() {
       setTrips(trips.filter((trip) => trip._id !== id));
       setIncomeReceived((prev) => ({ ...prev, [id]: '' }));
       setError('');
+      setSuccessMessage('Well Done trip is completed');
     } catch (err) {
       setError(err.response?.data?.message || t('complete_trip_error'));
       console.error('Complete error:', err);
@@ -77,8 +110,10 @@ function DriverTrips() {
 
   return (
     <div className="p-6">
+      {userName && <h2 className="text-xl font-semibold mb-4">{t('welcome')}, {userName}</h2>}
       <h1 className="text-3xl font-bold mb-6">{t('active_trips')}</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
+      {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
       {loading && <p className="text-blue-500 mb-4">{t('loading')}</p>}
       {trips.length === 0 ? (
         <p className="text-gray-600">{t('no_active_trips')}</p>

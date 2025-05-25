@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useTranslation } from 'react-i18next';
 
 function decodeJWT(token) {
@@ -28,7 +28,7 @@ function DriverTrips() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const response = await axios.get('http://localhost:5000/api/auth/profile', {
+        const response = await api.get('/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserName(response.data.name || '');
@@ -45,7 +45,7 @@ function DriverTrips() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/trips/driver', {
+      const response = await api.get('/api/trips/driver', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTrips(response.data.filter((trip) => trip.status !== 'Completed'));
@@ -62,8 +62,8 @@ function DriverTrips() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `http://localhost:5000/api/trips/accept/${id}`,
+      const response = await api.put(
+        `/api/trips/accept/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -91,8 +91,8 @@ function DriverTrips() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `http://localhost:5000/api/trips/complete/${id}`,
+      const response = await api.put(
+        `/api/trips/complete/${id}`,
         { incomeReceived: parseFloat(income) },
         { headers: { Authorization: `Bearer ${token}` } }
       );

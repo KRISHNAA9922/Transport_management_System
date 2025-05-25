@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useTranslation } from 'react-i18next';
 
 function Vehicles() {
@@ -22,7 +22,7 @@ function Vehicles() {
   const fetchVehicles = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/vehicles', {
+      const response = await api.get('/api/vehicles', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVehicles(response.data);
@@ -43,8 +43,8 @@ function Vehicles() {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       if (editingId) {
-        const { data } = await axios.put(
-          `http://localhost:5000/api/vehicles/${editingId}`,
+        const { data } = await api.put(
+          `/api/vehicles/${editingId}`,
           formData,
           config
         );
@@ -53,7 +53,7 @@ function Vehicles() {
         );
         setEditingId(null);
       } else {
-        const { data } = await axios.post('http://localhost:5000/api/vehicles', formData, config);
+        const { data } = await api.post('/api/vehicles', formData, config);
         setVehicles([...vehicles, data]);
       }
 
@@ -86,7 +86,7 @@ function Vehicles() {
     if (window.confirm(t('confirm_delete_vehicle'))) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/vehicles/${id}`, {
+        await api.delete(`/api/vehicles/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles((prev) => prev.filter((v) => v._id !== id));

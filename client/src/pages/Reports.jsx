@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Papa from 'papaparse';
 import { useTranslation } from 'react-i18next';
 
@@ -27,13 +27,13 @@ function Reports() {
     try {
       const token = localStorage.getItem('token');
       const [vehiclesRes, driversRes, expensesRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/vehicles', {
+        api.get('/api/vehicles', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get('http://localhost:5000/api/auth/drivers', {
+        api.get('/api/auth/drivers', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get('http://localhost:5000/api/expenses', {
+        api.get('/api/expenses', {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -65,10 +65,10 @@ function Reports() {
       if (filters.driver) params.append('driver', filters.driver);
 
       const [tripsRes, expensesRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/trips/reports/trips?${params}`, {
+        api.get(`/api/trips/reports/trips?${params}`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get('http://localhost:5000/api/expenses', {
+        api.get('/api/expenses', {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);

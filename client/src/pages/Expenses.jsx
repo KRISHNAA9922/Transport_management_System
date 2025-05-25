@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useTranslation } from 'react-i18next';
 
 function Expenses() {
@@ -28,10 +28,10 @@ function Expenses() {
     try {
       const token = localStorage.getItem('token');
       const [expensesRes, vehiclesRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/expenses', {
+        api.get('/api/expenses', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get('http://localhost:5000/api/vehicles', {
+        api.get('/api/vehicles', {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -60,10 +60,10 @@ function Expenses() {
 
     try {
       const response = editingId
-        ? await axios.put(`http://localhost:5000/api/expenses/${editingId}`, payload, {
+        ? await api.put(`/api/expenses/${editingId}`, payload, {
             headers: { Authorization: `Bearer ${token}` },
           })
-        : await axios.post('http://localhost:5000/api/expenses', payload, {
+        : await api.post('/api/expenses', payload, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
@@ -100,7 +100,7 @@ function Expenses() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+      await api.delete(`/api/expenses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setExpenses(expenses.filter((ex) => ex._id !== id));

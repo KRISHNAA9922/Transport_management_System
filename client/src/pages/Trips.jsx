@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useTranslation } from 'react-i18next';
 
 function Trips() {
@@ -27,9 +27,9 @@ function Trips() {
     try {
       const token = localStorage.getItem('token');
       const [tripsRes, vehiclesRes, driversRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/trips', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:5000/api/vehicles', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:5000/api/auth/drivers', { headers: { Authorization: `Bearer ${token}` } }),
+        api.get('/api/trips', { headers: { Authorization: `Bearer ${token}` } }),
+        api.get('/api/vehicles', { headers: { Authorization: `Bearer ${token}` } }),
+        api.get('/api/auth/drivers', { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       setTrips(tripsRes.data);
       setVehicles(vehiclesRes.data);
@@ -61,8 +61,8 @@ function Trips() {
     try {
       const token = localStorage.getItem('token');
       if (editingId) {
-        const response = await axios.put(
-          `http://localhost:5000/api/trips/${editingId}`,
+        const response = await api.put(
+          `/api/trips/${editingId}`,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -70,7 +70,7 @@ function Trips() {
         setEditingId(null);
         setSuccessMessage(t('trip_updated_successfully'));
       } else {
-        const response = await axios.post('http://localhost:5000/api/trips', formData, {
+        const response = await api.post('/api/trips', formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTrips([...trips, response.data]);
@@ -103,7 +103,7 @@ function Trips() {
     if (window.confirm(t('confirm_delete_trip'))) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/trips/${id}`, {
+        await api.delete(`/api/trips/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTrips(trips.filter((trip) => trip._id !== id));

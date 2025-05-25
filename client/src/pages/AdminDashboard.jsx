@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -29,10 +29,10 @@ function AdminDashboard() {
       try {
         const token = localStorage.getItem('token');
         const [tripsRes, expensesRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/trips', {
+          api.get('/api/trips', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:5000/api/expenses', {
+          api.get('/api/expenses', {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

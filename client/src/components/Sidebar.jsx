@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 function Vehicles() {
   const [vehicles, setVehicles] = useState([]);
@@ -20,7 +20,7 @@ function Vehicles() {
   const fetchVehicles = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/vehicles', {
+      const response = await api.get('/api/vehicles', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVehicles(response.data);
@@ -39,8 +39,8 @@ function Vehicles() {
       const token = localStorage.getItem('token');
       if (editingId) {
         // Update vehicle
-        const response = await axios.put(
-          `http://localhost:5000/api/vehicles/${editingId}`,
+        const response = await api.put(
+          `/api/vehicles/${editingId}`,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -48,7 +48,7 @@ function Vehicles() {
         setEditingId(null);
       } else {
         // Add vehicle
-        const response = await axios.post('http://localhost:5000/api/vehicles', formData, {
+        const response = await api.post('/api/vehicles', formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles([...vehicles, response.data]);
@@ -74,7 +74,7 @@ function Vehicles() {
     if (window.confirm('Are you sure you want to delete this vehicle?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/vehicles/${id}`, {
+        await api.delete(`/api/vehicles/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles(vehicles.filter((vehicle) => vehicle._id !== id));
